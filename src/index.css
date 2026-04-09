@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-epa-blue: #0071bc;
+  --color-epa-blue-dark: #205493;
+  --color-epa-blue-light: #4773aa;
+  --color-epa-green: #2e8540;
+  --color-epa-green-light: #4aa564;
+  --color-epa-gray: #5b616b;
+  --color-epa-gray-light: #aeb0b5;
+  --color-epa-gray-lighter: #d6d7d9;
+  --color-epa-gray-lightest: #f1f1f1;
+  --color-epa-red: #e31c3d;
+  --color-epa-gold: #fdb81e;
+}
+
+body {
+  margin: 0;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #212121;
+}
