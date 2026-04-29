@@ -3,25 +3,29 @@ export type Pollutant =
   | "sediment"
   | "pesticide"
   | "trash"
-  | "oil_grease_fuel"
   | "chloride"
-  | "solvent";
+  | "vocs"
+  | "pahs"
+  | "petroleum_hydrocarbons"
+  | "other_toxic";
 
 export type Benefit = "saves_money" | "reduces_ghg" | "conserves_water";
 
 export const POLLUTANT_LABELS: Record<Pollutant, string> = {
-  nutrients: "Nutrient Pollution",
-  sediment: "Sediment Pollution",
-  pesticide: "Pesticide Pollution",
-  trash: "Trash Pollution",
-  oil_grease_fuel: "Oil/Grease/Fuel Pollution",
-  chloride: "Chloride Pollution",
-  solvent: "Solvent Pollution",
+  nutrients: "Nutrients",
+  sediment: "Sediment",
+  pesticide: "Pesticides",
+  trash: "Trash",
+  chloride: "Chloride",
+  vocs: "VOCs",
+  pahs: "PAHs",
+  petroleum_hydrocarbons: "Petroleum Hydrocarbons",
+  other_toxic: "Other Toxic Pollutants",
 };
 
 export const BENEFIT_LABELS: Record<Benefit, string> = {
   saves_money: "Saves Money",
-  reduces_ghg: "Reduces Greenhouse Gas Emissions",
+  reduces_ghg: "Reduces GHG Emissions",
   conserves_water: "Conserves Water",
 };
 
@@ -35,14 +39,13 @@ export interface AssessmentQuestion {
   action: string;
   pollutants: Pollutant[];
   benefits: Benefit[];
-  isSubQuestion?: boolean;
-  parentContext?: string;
 }
 
 export interface Operation {
   id: string;
   name: string;
   description: string;
+  pollutants: string;
   opportunities: string;
   questions: AssessmentQuestion[];
 }
@@ -50,222 +53,112 @@ export interface Operation {
 export const operations: Operation[] = [
   {
     id: "parks",
-    name: "Parks & Open Space Management",
+    name: "Parks and Landscaping",
     description:
       "The management and care of trees, grass, and other vegetation at public parks, golf courses, conservation areas, community open space, and other publicly-owned properties. Specifically, this includes planting, mowing, trimming, fertilizer/pesticide application, organic debris management, irrigation, and waste management.",
+    pollutants:
+      "Nutrients (nitrogen, phosphorus) from fertilizers; pesticides; fuel and hydrocarbons from gas-powered landscape equipment",
     opportunities:
-      "Transitioning to native landscapes reduces runoff and requires less fertilizer/pesticides/water, while low-maintenance lawn care practices also reduce organic waste and the need for chemical applications/irrigation. Transitioning to electric maintenance equipment reduces oil and fuel pollution from spills.",
+      "Protecting natural lands from conversion to other uses prevents pollution associated with urban stormwater runoff. Transitioning to native landscapes reduces runoff and requires less fertilizer/pesticides/water, while low-maintenance lawn care practices also reduce organic waste and the need for chemical applications/irrigation. Transitioning to electric maintenance equipment reduces oil and fuel pollution from spills.",
     questions: [
       {
         id: "parks-1",
         question:
-          "Have on-site investigations been conducted on public properties to identify locations for tree planting/native landscaping?",
+          "Does your community have any programs focused on preservation of forests, wetlands, and other natural lands?",
         action:
-          "Conduct on-site investigations on public properties to identify locations for tree planting/native landscaping",
+          "Adopt a program to permanently protect priority parcels from development through acquisition or easements.",
         pollutants: ["nutrients", "sediment"],
-        benefits: [],
+        benefits: ["saves_money", "reduces_ghg", "conserves_water"],
       },
       {
         id: "parks-2",
         question:
-          "Has your community developed an integrated pest management plan that will help ensure that pesticides are used only as a last resort?",
-        action: "Consider developing an integrated pest management plan",
-        pollutants: ["pesticide"],
-        benefits: [],
+          "Does your community have any programs or plans focused on reforestation at priority public lands?",
+        action:
+          "Adopt programs or plans that have implementation of reforestation and tree planting projects on publicly owned turf or impervious surface as a goal (e.g., a watershed plan, urban tree canopy goal and plan, or urban heat island mitigation plan).",
+        pollutants: ["nutrients", "sediment"],
+        benefits: ["saves_money", "reduces_ghg", "conserves_water"],
       },
       {
         id: "parks-3",
         question:
-          "Are there procedures in place to help ensure that herbicides, pesticides, and fertilizers are properly used on public properties?",
+          "Does your community use conservation landscaping, xeriscaping, or other native landscaping practices on public properties?",
         action:
-          "Put procedures in place to help ensure that herbicides, pesticides, and fertilizers are properly used on public properties",
+          "Use conservation landscaping, xeriscaping, or other native landscaping practices on public properties to reduce the need for fertilizer, pesticides, and water.",
         pollutants: ["nutrients", "pesticide"],
-        benefits: [],
+        benefits: ["saves_money", "reduces_ghg", "conserves_water"],
       },
       {
         id: "parks-4",
         question:
-          "Does your community use native and naturalized landscaping guidance and plant lists when working on public properties?",
+          "Does your community have an integrated pest management plan to ensure that pesticides are used only as a last resort on public properties?",
         action:
-          "Use native and naturalized landscaping guidance and plant lists when working on public properties",
-        pollutants: ["nutrients", "sediment"],
-        benefits: ["saves_money", "conserves_water"],
+          "Use integrated pest management to control weeds and insect pests at public properties. IPM reduces or eliminates pesticide use by prioritizing mechanical methods over chemical ones, using pesticides only as a last resort.",
+        pollutants: ["pesticide"],
+        benefits: ["saves_money"],
       },
       {
         id: "parks-5",
         question:
-          "Are irrigation systems carefully designed to help conserve potable water and provide only the water that plants need to survive?",
+          "Does your community have procedures in place to ensure that pesticides and fertilizers are properly used on public properties?",
         action:
-          "Design irrigation systems carefully to help conserve potable water and provide only the water that plants need to survive",
-        pollutants: [],
-        benefits: ["saves_money", "conserves_water"],
+          "Implement procedures and training to ensure that landscape staff and contractors are properly handling and applying fertilizers and pesticides to prevent overuse and avoid spills.",
+        pollutants: ["nutrients", "pesticide"],
+        benefits: ["saves_money"],
       },
       {
         id: "parks-6",
         question:
-          "Does your community provide regular stormwater pollution prevention trainings to employees and contractors involved with park and landscape maintenance activities?",
+          "Does your community conduct annual soil tests to calibrate lawn fertilizer needs?",
         action:
-          "Provide regular stormwater pollution prevention trainings to employees and contractors involved with park and landscape maintenance activities",
-        pollutants: [],
-        benefits: [],
-      },
-      {
-        id: "parks-7",
-        question: "Does your community have a tree canopy goal?",
-        action: "Establish a tree canopy goal for your community",
-        pollutants: ["nutrients", "sediment"],
-        benefits: [],
-      },
-      {
-        id: "parks-8",
-        question:
-          "Does your community conduct soil tests at public properties to calibrate fertilizer needs?",
-        action:
-          "Conduct soil tests at public properties to calibrate fertilizer needs",
+          "Conduct regular soil testing to determine lawn nutrient needs and use results to select the appropriate fertilizer type and application rate.",
         pollutants: ["nutrients"],
         benefits: ["saves_money"],
       },
       {
+        id: "parks-7",
+        question:
+          "Are irrigation systems carefully designed to help conserve potable water and provide only the water that plants need to survive?",
+        action:
+          "Design irrigation systems to use only what is needed for plants to survive. EPA WaterSense irrigation fixtures such as weather or soil moisture-based irrigation controllers help conserve water, preventing runoff or leaching of pollutants from overwatering.",
+        pollutants: ["nutrients"],
+        benefits: ["conserves_water"],
+      },
+      {
+        id: "parks-8",
+        question:
+          "Does your community use battery-powered landscape equipment instead of gas-powered?",
+        action:
+          "Plan for replacement of gas-powered landscape equipment with battery-powered equipment.",
+        pollutants: ["vocs", "petroleum_hydrocarbons"],
+        benefits: ["saves_money", "reduces_ghg"],
+      },
+      {
         id: "parks-9",
         question:
-          "Are weeds controlled by mechanical efforts (hand pulling or hoeing) with herbicide as a last resort?",
+          "Has your community installed hydration refill stations at parks and other public properties?",
         action:
-          "Control weeds by mechanical efforts (hand pulling or hoeing) with herbicide as a last resort",
-        pollutants: ["pesticide"],
+          "Install hydration refill stations at public parks and facilities to encourage use of refillable bottles and reduce trash pollution.",
+        pollutants: ["trash"],
         benefits: [],
       },
       {
         id: "parks-10",
         question:
-          "Does your community use WaterSense irrigation fixtures on public properties?",
-        action: "Use WaterSense irrigation fixtures on public properties",
-        pollutants: [],
-        benefits: ["conserves_water"],
+          "Does your community use Safer Choice-certified athletic field paint?",
+        action:
+          "Use less toxic paint for athletic field striping. EPA's Safer Choice website can be used to find certified products.",
+        pollutants: ["vocs", "other_toxic"],
+        benefits: ["reduces_ghg"],
       },
       {
         id: "parks-11",
         question:
-          "Does your community have an irrigation plan for public properties that includes water conservation as a goal?",
+          "Does your community use sand, coconut coir, or other organic material as infill for artificial turf athletic fields?",
         action:
-          "Develop an irrigation plan for public properties that includes water conservation as a goal",
-        pollutants: [],
-        benefits: ["conserves_water"],
-      },
-      {
-        id: "parks-12",
-        question:
-          "Does your community have procedures in place to replace gas powered landscape equipment with battery powered?",
-        action:
-          "Put procedures in place to replace gas powered landscape equipment with battery powered",
-        pollutants: ["oil_grease_fuel"],
+          "Use sand, coconut coir, or other organic material as infill for artificial turf athletic fields instead of crumb rubber.",
+        pollutants: ["chloride", "pahs", "other_toxic"],
         benefits: ["reduces_ghg"],
-      },
-      {
-        id: "parks-13",
-        question:
-          "Has your community passed laws on the use of gas powered landscape equipment?",
-        action:
-          "Consider passing laws on the use of gas powered landscape equipment",
-        pollutants: ["oil_grease_fuel"],
-        benefits: ["reduces_ghg"],
-      },
-      {
-        id: "parks-14",
-        question:
-          "Does your community offer free soil testing services to residents to help them determine fertilizer and other lawn care needs?",
-        action:
-          "Offer free soil testing services to residents to help them determine fertilizer and other lawn care needs",
-        pollutants: ["nutrients"],
-        benefits: [],
-      },
-      {
-        id: "parks-15",
-        question:
-          "Does your community encourage tree planting and native landscaping through outreach and incentives (e.g. coupons at local nursery)?",
-        action:
-          "Encourage tree planting and native landscaping through outreach and incentives (e.g. coupons at local nursery)",
-        pollutants: ["nutrients", "sediment"],
-        benefits: [],
-      },
-      {
-        id: "parks-16",
-        question:
-          "Has your community installed hydration refill stations in public properties?",
-        action: "Install hydration refill stations in public properties",
-        pollutants: ["trash"],
-        benefits: [],
-      },
-      {
-        id: "parks-17",
-        question:
-          'Does your community have outreach programs that encourage homeowners to minimize the production of organic yard debris? (e.g., use leaves as mulch, set mower blades higher, "let it lie")',
-        action:
-          'Develop outreach programs that encourage homeowners to minimize the production of organic yard debris (e.g., use leaves as mulch, set mower blades higher, "let it lie")',
-        pollutants: ["nutrients"],
-        benefits: [],
-      },
-      {
-        id: "parks-18",
-        question:
-          "Does your community have a program or plan to address heat island mitigation?",
-        action:
-          "Develop a program or plan to address heat island mitigation",
-        pollutants: ["nutrients", "sediment"],
-        benefits: [],
-      },
-      {
-        id: "parks-19",
-        question:
-          "Does your community have public unpaved trails or roads (i.e., dirt, gravel, native rock, or other non-durable surfacing)?",
-        action:
-          "Assess and inventory public unpaved trails or roads",
-        pollutants: ["sediment"],
-        benefits: [],
-      },
-      {
-        id: "parks-20",
-        question:
-          "Does your community have an inventory of public and private unpaved trails and roads (i.e., dirt, gravel, native rock, or other non-durable surfacing)?",
-        action:
-          "Create an inventory of public and private unpaved trails and roads",
-        pollutants: ["sediment"],
-        benefits: [],
-      },
-      {
-        id: "parks-21",
-        question:
-          "Does your community know the general condition of those roads?",
-        action:
-          "Assess the general condition of unpaved roads in your community",
-        pollutants: ["sediment"],
-        benefits: [],
-      },
-      {
-        id: "parks-22",
-        question:
-          "Does your community have a maintenance program that prioritizes road improvements within the annual budget?",
-        action:
-          "Develop a maintenance program that prioritizes road improvements within the annual budget",
-        pollutants: ["sediment"],
-        benefits: [],
-      },
-      {
-        id: "parks-23",
-        question:
-          "Does permitting and enforcement of new roads in your community result in substantial compliance with unpaved road standards?",
-        action:
-          "Strengthen permitting and enforcement to ensure compliance with unpaved road standards",
-        pollutants: ["sediment"],
-        benefits: [],
-      },
-      {
-        id: "parks-24",
-        question:
-          "Is your community bringing existing roads into compliance with unpaved road standards?",
-        action:
-          "Work toward bringing existing roads into compliance with unpaved road standards",
-        pollutants: ["sediment"],
-        benefits: [],
       },
     ],
   },
@@ -274,40 +167,95 @@ export const operations: Operation[] = [
     name: "Winter Road Maintenance",
     description:
       "Planning and deployment of ice prevention and deicing operations across public transportation infrastructure to ensure safe travel in winter conditions. These activities impact salt storage facilities, roads, parking lots, bridges, sidewalks, and other public transit spaces.",
+    pollutants: "Chloride from road salt",
     opportunities:
       "Process changes, equipment investments and calibration, road salt alternatives, and training on best practices can all help to minimize the amount of chloride entering waterways while still meeting public safety needs.",
     questions: [
       {
         id: "winter-1",
-        question:
-          "Does your community apply a direct liquid application such as a brine mixture on roadways before a known storm event?",
+        question: "Does your community have a salt management plan?",
         action:
-          "Apply a direct liquid application such as a brine mixture on roadways before a known storm event",
+          "Adopt a salt management plan that identifies best management practices to reduce the negative environmental impacts of road salt while fulfilling a community's obligation to provide safe, efficient and cost-effective roads. The plan should apply to all winter maintenance personnel including staff and contractors.",
         pollutants: ["chloride"],
         benefits: ["saves_money"],
       },
       {
         id: "winter-2",
         question:
-          "Does your community calibrate road salt application equipment to maintain a consistent application rate?",
+          "Does your community use anti-icing (i.e., applying a small amount of liquid deicer or salt brine) just before expected snowfall?",
         action:
-          "Calibrate road salt application equipment to maintain a consistent application rate",
+          "Use anti-icing, which involves putting down a small amount of liquid deicer just before the storm. With this small amount of deicer, a micro layer of melting will occur and help prevent the snow from bonding to the pavement.",
         pollutants: ["chloride"],
         benefits: ["saves_money"],
       },
       {
         id: "winter-3",
         question:
-          "Does your community provide salt application training for plow operators?",
-        action: "Provide salt application training for plow operators",
+          "Does your community prioritize physical removal of snow prior to treating surfaces with deicers?",
+        action:
+          "Use plows and other physical methods to remove as much snow and ice as possible before treating with deicers to reduce the amount of deicer needed.",
         pollutants: ["chloride"],
-        benefits: ["saves_money"],
+        benefits: [],
       },
       {
         id: "winter-4",
         question:
-          "Does your community store salt under a covered structure?",
-        action: "Store salt under a covered structure",
+          "Does your community have established salt application rate guidelines that are based on reputable industry benchmarks?",
+        action:
+          "Adopt salt application rate guidelines to benchmark with reputable industry research (i.e., Clear Roads, Snow and Ice Management Association, Sustainable Salt Initiative).",
+        pollutants: ["chloride"],
+        benefits: [],
+      },
+      {
+        id: "winter-5",
+        question:
+          "Does your community select deicing materials and application rates based on precise weather forecasts and data from road weather information stations (e.g., pavement temperatures)?",
+        action:
+          "Use precise weather forecasts and road weather information stations to apply salt only when and where needed.",
+        pollutants: ["chloride"],
+        benefits: ["saves_money"],
+      },
+      {
+        id: "winter-6",
+        question:
+          "Does your community use variable-rate spreaders and efficient snow removal equipment to reduce salt use?",
+        action:
+          "Use segmented plows, secondary plows, variable-rate spreaders and well-maintained machinery for faster, more effective clearing and to match road conditions.",
+        pollutants: ["chloride"],
+        benefits: ["saves_money"],
+      },
+      {
+        id: "winter-7",
+        question:
+          "Does your community calibrate spreaders used for road salt application to maintain a consistent application rate?",
+        action: "Calibrate spreaders to avoid over-application of deicers.",
+        pollutants: ["chloride"],
+        benefits: ["saves_money"],
+      },
+      {
+        id: "winter-8",
+        question:
+          "Does your community measure and evaluate deicer use, storm characteristics, and service quality to refine winter road maintenance practices over time?",
+        action:
+          "Establish methods to monitor and evaluate salt purchase, use, weather severity, and service quality and use this data to refine practices over time. This may include use of GPS enabled/automated vehicle location salt tracking technology.",
+        pollutants: ["chloride"],
+        benefits: ["saves_money"],
+      },
+      {
+        id: "winter-9",
+        question:
+          "Does your community establish winter road maintenance service contracts as performance-based agreements?",
+        action:
+          "Establish winter road maintenance service contracts as performance-based agreements that incentivize efficiency rather than compensate for the quantity or frequency of salt and other materials applied.",
+        pollutants: ["chloride"],
+        benefits: ["saves_money"],
+      },
+      {
+        id: "winter-10",
+        question:
+          "Does your community require and provide access to salt application training for plow operators and winter maintenance contractors?",
+        action:
+          "Require and provide access to salt application training for snow plow operators and winter maintenance contractors.",
         pollutants: ["chloride"],
         benefits: [],
       },
@@ -318,92 +266,109 @@ export const operations: Operation[] = [
     name: "Construction & Maintenance",
     description:
       "Planning, design, construction, maintenance, and repair of public infrastructure projects (e.g., water/wastewater/stormwater, transportation, energy, telecommunications, restoration projects, and public facilities).",
+    pollutants:
+      "Sediment from eroded soils; pesticides and nutrients from transportation right-of-way maintenance; PAHs from coal tar-based pavement sealant; volatile organic carbons and solvents associated with pavement striping",
     opportunities:
-      "Minimizing site disturbance and conducting regular inspections and maintenance helps prevent erosion of sediment, while substituting materials and processes reduces stormwater pollution potential (with less toxic alternatives).",
+      "Minimizing site disturbance and conducting regular inspections and maintenance helps prevent erosion of sediment, while changing the materials or processes used can reduce the amount of toxic pollutants used, reducing stormwater pollution potential.",
     questions: [
       {
         id: "construction-1",
         question:
-          "Does your community encourage outdoor maintenance during dry weather to limit spills and leaks from being washed away by rain water?",
+          "Does your community have regulations in place to minimize tree and forest loss during public construction activities?",
         action:
-          "Encourage outdoor maintenance during dry weather to limit spills and leaks from being washed away by rain water",
-        pollutants: ["oil_grease_fuel", "solvent"],
-        benefits: [],
+          "Modify local codes and ordinances so that developments minimize tree and forest loss.",
+        pollutants: ["nutrients", "sediment"],
+        benefits: ["reduces_ghg"],
       },
       {
         id: "construction-2",
         question:
-          "Does your community's local Erosion and Sediment Control ordinance require minimized site clearing?",
+          "Does your community have regulations in place to minimize clearing, erosion, and sedimentation during public construction, maintenance, and repair projects?",
         action:
-          "Update your Erosion and Sediment Control ordinance to require minimized site clearing",
+          "Adopt a local erosion and sediment control ordinance to minimize soil erosion during construction activities.",
         pollutants: ["sediment"],
         benefits: [],
       },
       {
         id: "construction-3",
         question:
-          "Does your community have a local erosion and sediment control ordinance that includes the following?",
+          "Does your community regularly inspect and maintain construction and maintenance equipment to prevent leaking contaminants?",
         action:
-          "Develop or strengthen a local erosion and sediment control ordinance",
-        pollutants: ["sediment"],
+          "Establish procedures to regularly inspect and maintain construction and maintenance equipment to minimize pollutant leaks.",
+        pollutants: ["vocs", "pahs", "petroleum_hydrocarbons", "other_toxic"],
         benefits: [],
-      },
-      {
-        id: "construction-3a",
-        question: "Minimize clearing",
-        action: "Include minimize clearing requirements in erosion and sediment control ordinance",
-        pollutants: ["sediment"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Erosion and sediment control ordinance",
-      },
-      {
-        id: "construction-3b",
-        question: "Rapid soil stabilization",
-        action: "Include rapid soil stabilization requirements in erosion and sediment control ordinance",
-        pollutants: ["sediment"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Erosion and sediment control ordinance",
-      },
-      {
-        id: "construction-3c",
-        question: "Assess erosion and sediment control practices after storms",
-        action: "Include post-storm assessment requirements in erosion and sediment control ordinance",
-        pollutants: ["sediment"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Erosion and sediment control ordinance",
       },
       {
         id: "construction-4",
-        question: "Does your community use solvents in construction and maintenance?",
+        question:
+          "Does your community have a program in place to regularly inspect, maintain, and repair stormwater management facilities and infrastructure?",
         action:
-          "Evaluate solvent use in construction and maintenance operations",
-        pollutants: ["solvent"],
+          "Implement procedures to regularly inspect, maintain, and repair stormwater management facilities and infrastructure to prevent failures that contribute to erosion or other pollution discharge.",
+        pollutants: ["sediment"],
+        benefits: ["saves_money"],
+      },
+      {
+        id: "construction-5",
+        question:
+          "Does your community use less toxic alternatives to coal tar-based pavement sealants for public projects?",
+        action:
+          "Use alternatives to coal tar-based pavement sealants (e.g., coal tar-free asphalt emulsions, acrylics, bio-based sealers, polymer-modified emulsions) on public construction projects to reduce PAHs.",
+        pollutants: ["pahs"],
         benefits: [],
       },
       {
-        id: "construction-4a",
+        id: "construction-6",
         question:
-          "If yes, has your community identified replacement with less toxic materials?",
+          "Does your community use water-based paints and coatings or alternative paints instead of oil-based ones for public road and parking lot striping where appropriate?",
         action:
-          "Identify replacement of solvents with less toxic materials in construction and maintenance",
-        pollutants: ["solvent"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Solvent use in construction",
+          "Consider water-based or alternative paint (e.g., lime, milk protein, clay and earth-based pigments) and coatings where suitable to reduce toxic pollutants such as volatile organic compounds and eliminate the need for solvents for cleanup.",
+        pollutants: ["vocs"],
+        benefits: ["saves_money", "reduces_ghg"],
       },
       {
-        id: "construction-4b",
+        id: "construction-7",
         question:
-          "If yes, has your community identified alternative processes to use less solvents?",
+          "Does your community use integrated pest management for public right-of-way maintenance to ensure that pesticides are used only as a last resort?",
         action:
-          "Identify alternative processes to use less solvents in construction and maintenance",
-        pollutants: ["solvent"],
+          "Use integrated pest management to control weeds and pests along public roadsides.",
+        pollutants: ["pesticide"],
+        benefits: ["saves_money"],
+      },
+      {
+        id: "construction-8",
+        question:
+          "Does your community have procedures in place to ensure that pesticides and fertilizers are properly used on public rights-of-way?",
+        action:
+          "Implement procedures and training to ensure that public works staff and contractors are properly handling and applying fertilizers and pesticides to prevent overuse and avoid spills.",
+        pollutants: ["nutrients", "pesticide"],
+        benefits: ["saves_money"],
+      },
+      {
+        id: "construction-9",
+        question:
+          "Does your community maintain and enforce design and maintenance standards for public and private unpaved roads (i.e., dirt, gravel, native rock, or other non-durable surfacing)?",
+        action:
+          "Integrate design and maintenance standards for unpaved roads into the land development process.",
+        pollutants: ["sediment"],
+        benefits: ["saves_money"],
+      },
+      {
+        id: "construction-10",
+        question:
+          "Does your community have a program focused on inventory, inspection, and maintenance of unpaved roads?",
+        action:
+          "Implement procedures to inventory existing unpaved roads, conduct regular inspections of their condition, and perform maintenance to prevent or address erosion problems.",
+        pollutants: ["sediment"],
+        benefits: ["saves_money"],
+      },
+      {
+        id: "construction-11",
+        question:
+          "Is your community working to bring existing roads into compliance with unpaved road standards (or otherwise address erosion on existing unpaved roads)?",
+        action:
+          "Address the most severe erosion problems on unpaved roads through regrading, drainage improvements, and slope stabilization.",
+        pollutants: ["sediment"],
         benefits: [],
-        isSubQuestion: true,
-        parentContext: "Solvent use in construction",
       },
     ],
   },
@@ -411,298 +376,241 @@ export const operations: Operation[] = [
     id: "vehicle",
     name: "Vehicle & Fleet Management",
     description:
-      "Powering, maintaining, cleaning, and storing publicly-owned fleets, such as buses, street sweepers, construction equipment, police cars, fire trucks, municipal vehicles, and school buses.",
+      "Powering, maintaining, cleaning, repairing, and storing publicly-owned fleets, such as buses, street sweepers, construction equipment, police cars, fire trucks, municipal vehicles, and school buses.",
+    pollutants:
+      "Solvents (e.g., degreasers, paint thinners), oil and grease, fuels, detergents, and other toxic compounds associated with vehicle cleaning, maintenance, and repair",
     opportunities:
-      "Conducting regular vehicle inspections minimizes spills and leaks, while substituting materials and processes (e.g., steam clean parts instead of using solvents) reduces stormwater pollution potential. Converting fleets from gasoline-powered to electric also reduces oil and fuel pollution from spills.",
+      "Conducting regular vehicle inspections minimizes spills and leaks, while changing materials or processes reduces stormwater pollution potential. Converting fleets from gasoline-powered to electric also reduces oil and fuel pollution from spills.",
     questions: [
       {
         id: "vehicle-1",
         question:
-          "Does your community have procedures in place to replace gas powered vehicles with electric vehicles?",
+          "Does your community use environmentally friendly products for vehicle washing?",
         action:
-          "Develop procedures to replace gas powered vehicles with electric vehicles",
-        pollutants: ["oil_grease_fuel"],
-        benefits: ["reduces_ghg", "saves_money"],
+          "Use biodegradable, phosphate-free, water-based detergents for fleet washing. EPA's Safer Choice website can be used to search for specific products for cleaning, protecting, and removing salt from vehicles.",
+        pollutants: ["nutrients"],
+        benefits: ["saves_money", "reduces_ghg"],
       },
       {
         id: "vehicle-2",
         question:
-          "Does your community have procedures in place to regularly inspect and maintain fleet vehicles to minimize leaking contaminants?",
+          "Does your community use a system for cleaning vehicle parts that does not require solvents?",
         action:
-          "Develop procedures to regularly inspect and maintain fleet vehicles to minimize leaking contaminants",
-        pollutants: ["oil_grease_fuel"],
-        benefits: [],
+          "Replace solvent-based parts cleaning with alternative methods (e.g., mechanical cleaning, enzyme washers, bake-off ovens).",
+        pollutants: ["vocs"],
+        benefits: ["saves_money", "reduces_ghg"],
       },
       {
         id: "vehicle-3",
         question:
-          "Does your community use solvents in vehicle and fleet operations?",
+          "Does your community use Safer Choice-certified degreasers for cleaning vehicle parts?",
         action:
-          "Evaluate solvent use in vehicle and fleet operations",
-        pollutants: ["solvent"],
-        benefits: [],
+          "Replace solvents such as degreasers with less toxic alternatives (e.g., switch from petroleum-based to water-based versions). EPA's Safer Choice website can be used to find certified products.",
+        pollutants: ["vocs"],
+        benefits: ["saves_money", "reduces_ghg"],
       },
       {
-        id: "vehicle-3a",
+        id: "vehicle-4",
         question:
-          "If yes, has your community identified replacement with less toxic materials?",
+          "Does your community regularly inspect and maintain fleet vehicles to minimize leaking contaminants?",
         action:
-          "Identify replacement of solvents with less toxic materials in vehicle and fleet operations",
-        pollutants: ["solvent"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Solvent use in vehicle/fleet operations",
+          "Establish procedures to regularly inspect and maintain fleet vehicles to minimize pollutant leaks (e.g., fuel, brake fluid, antifreeze, oil).",
+        pollutants: ["vocs", "pahs", "petroleum_hydrocarbons", "other_toxic"],
+        benefits: ["saves_money"],
       },
       {
-        id: "vehicle-3b",
+        id: "vehicle-5",
         question:
-          "If yes, has your community identified alternative processes to use less solvents?",
+          "Does your community change fleet vehicle fluids on an as-needed basis, using inspection results?",
         action:
-          "Identify alternative processes to use less solvents in vehicle and fleet operations",
-        pollutants: ["solvent"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Solvent use in vehicle/fleet operations",
+          "Change vehicle fluids on an as-needed basis rather than a fixed schedule to avoid unnecessary maintenance and associated chemical use/spills.",
+        pollutants: ["vocs", "pahs", "petroleum_hydrocarbons", "other_toxic"],
+        benefits: ["saves_money"],
+      },
+      {
+        id: "vehicle-6",
+        question:
+          "Does your community have procedures in place to replace gas-powered vehicles with hybrid or electric vehicles?",
+        action:
+          "Adopt a policy and procedures for replacing gas-powered fleet vehicles with hybrid or electric vehicles.",
+        pollutants: ["vocs"],
+        benefits: ["saves_money", "reduces_ghg"],
       },
     ],
   },
   {
     id: "facility",
-    name: "Outdoor Facility Management",
+    name: "Public Facility Management",
     description:
       "Operating and maintaining outdoor hardscape portions of publicly-owned facilities, such as municipal buildings, public works yards, and public swimming pools.",
+    pollutants: "Various, including detergents and solvents used for cleaning",
     opportunities:
-      "Using less toxic chemical alternatives and dry cleaning methods for washing buildings, pavement, and swimming pools reduces stormwater pollution potential. Inventorying stored products can help to minimize overpurchase and overuse of chemicals, further reducing pollution potential.",
+      "Changing the materials or processes used to clean buildings, pavements, and other hardscape components can reduce the amount of toxic pollutants used, reducing stormwater pollution potential. Inventorying stored products can help to minimize overpurchase and overuse of chemicals, further reducing pollution potential.",
     questions: [
       {
         id: "facility-1",
         question:
-          "Does your community maintain an inventory of materials stored at each facility?",
+          "Does your community maintain an inventory of materials stored and used at each public facility?",
         action:
-          "Maintain an inventory of materials stored at each facility",
-        pollutants: ["solvent", "oil_grease_fuel"],
+          "Maintain an inventory of all materials stored and used at public facilities to keep track of chemical usage and reduce unnecessary purchasing, overuse, and waste.",
+        pollutants: [
+          "nutrients",
+          "sediment",
+          "pesticide",
+          "trash",
+          "chloride",
+          "vocs",
+          "pahs",
+          "petroleum_hydrocarbons",
+          "other_toxic",
+        ],
         benefits: ["saves_money"],
       },
       {
         id: "facility-2",
         question:
-          "Does your community have an ordinance that requires dechlorination of pool water and draining to a landscaped area at the end of the season?",
+          "Does your community use mechanical or dry methods to clean hard surfaces where possible instead of using chemicals?",
         action:
-          "Develop an ordinance that requires dechlorination of pool water and draining to a landscaped area at the end of the season",
-        pollutants: ["chloride"],
-        benefits: [],
+          "Use mechanical or dry cleaning (e.g., sweeping) methods to clean hard surfaces such as buildings and pavements where possible, to avoid using detergents and degreasers.",
+        pollutants: ["nutrients", "vocs"],
+        benefits: ["saves_money", "conserves_water"],
       },
       {
         id: "facility-3",
         question:
-          "Does your community use solvents in facility management?",
-        action: "Evaluate solvent use in facility management",
-        pollutants: ["solvent"],
-        benefits: [],
-      },
-      {
-        id: "facility-3a",
-        question:
-          "If yes, has your community identified replacement with less toxic materials?",
+          "Does your community use the least toxic products available for cleaning buildings, pavement, pools, and other hardscape portions of public facilities?",
         action:
-          "Identify replacement of solvents with less toxic materials in facility management",
-        pollutants: ["solvent"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Solvent use in facility management",
-      },
-      {
-        id: "facility-3b",
-        question:
-          "If yes, has your community identified alternative processes to use less solvents?",
-        action:
-          "Identify alternative processes to use less solvents in facility management",
-        pollutants: ["solvent"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Solvent use in facility management",
+          "Use the least toxic alternatives for facility cleaning, such as biodegradable, phosphate-free, water-based detergents for outdoor building washing or water-based paints, gels, or sprays for graffiti removal. EPA's Safer Choice website can be used to search for specific cleaning products.",
+        pollutants: ["nutrients", "vocs"],
+        benefits: ["saves_money", "reduces_ghg"],
       },
       {
         id: "facility-4",
         question:
-          "Does your community have procedures in place to use dry materials instead of liquids to cleanup spills (i.e., absorbent materials, brooms or shovels)?",
+          "Does your community use water-based paints and coatings or alternative paints instead of oil-based ones for outdoor use where appropriate?",
         action:
-          "Develop procedures to use dry materials instead of liquids to cleanup spills (i.e., absorbent materials, brooms or shovels)",
-        pollutants: ["oil_grease_fuel", "solvent"],
+          "Consider water-based or alternative paint (e.g., lime, milk protein, clay and earth-based pigments) and coatings where suitable to reduce toxic pollutants such as volatile organic compounds and eliminate the need for solvents for cleanup.",
+        pollutants: ["vocs"],
+        benefits: ["saves_money", "reduces_ghg"],
+      },
+      {
+        id: "facility-5",
+        question:
+          "Does your community use daily pool water testing to determine chemical needs?",
+        action:
+          "Use water test results to guide pool maintenance and prevent over-application of chemicals which can lead to production of disinfection by-products that are difficult to remove and may end up in stormwater.",
+        pollutants: ["chloride", "other_toxic"],
+        benefits: ["saves_money"],
+      },
+      {
+        id: "facility-6",
+        question:
+          "Does your community dechlorinate pool water prior to discharge at the end of the season?",
+        action:
+          "Follow best practices to dechlorinate public pool through UV ray exposure prior to discharge at the end of the season.",
+        pollutants: ["chloride", "other_toxic"],
         benefits: [],
       },
     ],
   },
   {
-    id: "policies",
-    name: "Policies & Regulations",
+    id: "procurement",
+    name: "Procurement & Regulations",
     description:
-      "Development, adoption, and implementation of policies and regulations by municipal and territorial agencies or Tribal nations. Also includes use of existing regulations to encourage or enforce pollutant prevention initiatives.",
+      "Development, adoption, and implementation of policies and regulations by municipal and territorial agencies or Tribal nations. Also includes use of existing regulations to encourage or enforce pollution prevention initiatives.",
+    pollutants: "Various",
     opportunities:
-      "Include bans or fees on specific pollution-generating products, green purchasing policies, and using existing regulations to encourage pollution prevention.",
+      "Restricting the sale or use of specific products and/or creating financial disincentives through regulatory changes reduces pollutant use. Green purchasing policies outline standards and procedures for selecting environmentally preferable products.",
     questions: [
       {
-        id: "policies-1",
+        id: "procurement-1",
         question:
-          "Does your community have a ban on single-use consumer products?",
-        action: "Consider a ban on single-use consumer products",
+          "Has your community enacted a ban on the provision of single-use plastics (e.g., plastic bags, straws, bottles, expanded polystyrene foam containers) to consumers?",
+        action:
+          "Ban all single-use plastics, or certain types of single-use plastics such as plastic bags or bottles, to address common sources of trash pollution in your community.",
         pollutants: ["trash"],
         benefits: [],
       },
       {
-        id: "policies-2",
+        id: "procurement-2",
         question:
-          "Does your community have a ban on single-use plastic bags?",
-        action: "Consider a ban on single-use plastic bags",
+          "Does your community have regulatory measures in place to ensure that single-use plastic products are not provided free of charge at the point of sale to the final consumer?",
+        action:
+          "Enact legislation requiring retail establishments to charge consumers a set amount for single-use plastic products such as plastic bags.",
         pollutants: ["trash"],
         benefits: [],
       },
       {
-        id: "policies-3",
+        id: "procurement-3",
         question:
-          "Does your community have a ban on Expanded Polystyrene (EPS) products?",
-        action: "Consider a ban on Expanded Polystyrene (EPS) products",
+          "Has your community enacted a ban on the use of gas-powered lawn and landscaping equipment, such as leaf blowers, string trimmers, hedge trimmers, edgers, pole saws, chainsaws, and mowers?",
+        action:
+          "Enact a ban on the use of gas-powered lawn and landscaping equipment.",
+        pollutants: ["vocs", "petroleum_hydrocarbons"],
+        benefits: ["reduces_ghg"],
+      },
+      {
+        id: "procurement-4",
+        question:
+          "Has your community enacted legislation that prohibits the sale of new gas-powered lawn and landscaping equipment?",
+        action:
+          "Enact legislation that prohibits the sale of new gas-powered lawn and landscaping equipment.",
+        pollutants: ["vocs", "petroleum_hydrocarbons"],
+        benefits: [],
+      },
+      {
+        id: "procurement-5",
+        question:
+          "Has your community enacted a ban on the sale of coal-tar based pavement sealcoat?",
+        action:
+          "Enact legislation prohibiting the sale of coal tar-based pavement sealant to limit the amount of Polycyclic Aromatic Hydrocarbons entering stormwater and waterbodies.",
+        pollutants: ["pahs"],
+        benefits: [],
+      },
+      {
+        id: "procurement-6",
+        question:
+          "Has your community enacted a ban on the sale or use of phosphorus fertilizer for turf?",
+        action:
+          "Enact legislation prohibiting the sale or use of phosphorus fertilizer on turf.",
+        pollutants: ["nutrients"],
+        benefits: [],
+      },
+      {
+        id: "procurement-7",
+        question:
+          "Has your community enacted fertilizer regulations that establish nitrogen application limits for consumers and professional applicators?",
+        action:
+          "Enact fertilizer regulations that establish nitrogen application limits for consumers and professional applicators to reduce excess nutrient runoff.",
+        pollutants: ["nutrients"],
+        benefits: [],
+      },
+      {
+        id: "procurement-8",
+        question:
+          "Does your community have a green purchasing policy that commits to environmentally preferable purchasing using standards and procedures for selecting products based on environmental criteria?",
+        action:
+          "Develop a green purchasing policy that coordinates purchasing to minimize impacts on human health and the natural environment.",
         pollutants: ["trash"],
-        benefits: [],
+        benefits: ["saves_money", "reduces_ghg", "conserves_water"],
       },
       {
-        id: "policies-4",
+        id: "procurement-9",
         question:
-          "Does your community have a ban on coal-tar sealants?",
-        action: "Consider a ban on coal-tar sealants",
-        pollutants: ["oil_grease_fuel"],
-        benefits: [],
+          "Does your community have regulations in place to protect forests, wetlands, and other natural lands from impacts during land development?",
+        action:
+          "Adopt regulations that minimize loss of forests, wetlands, and natural areas during land development.",
+        pollutants: ["nutrients", "sediment"],
+        benefits: ["reduces_ghg"],
       },
       {
-        id: "policies-5",
+        id: "procurement-10",
         question:
-          "Has your community adopted a green purchasing policy or Environmentally Preferable Purchasing Program?",
+          "Does your community have regulations in place to minimize clearing and prevent erosion during land development?",
         action:
-          "Adopt a green purchasing policy or Environmentally Preferable Purchasing Program",
-        pollutants: ["solvent"],
-        benefits: ["saves_money"],
-      },
-      {
-        id: "policies-6",
-        question:
-          "Does your community assess a fee to provide single use paper or plastic items to a consumer?",
-        action:
-          "Consider assessing a fee to provide single use paper or plastic items to a consumer",
-        pollutants: ["trash"],
-        benefits: [],
-      },
-      {
-        id: "policies-7",
-        question:
-          "Does your community have an emergency response plan as required under the Emergency Planning and Community Right-To-Know Act?",
-        action:
-          "Develop an emergency response plan, inventory chemicals, and replace with non-toxic alternatives",
-        pollutants: ["solvent", "oil_grease_fuel"],
-        benefits: [],
-      },
-      {
-        id: "policies-7a",
-        question:
-          "If yes, does your community have a local ordinance to work with businesses on outreach and compliance?",
-        action:
-          "Develop a local ordinance to work with businesses on outreach and compliance",
-        pollutants: ["solvent", "oil_grease_fuel"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Emergency response plan",
-      },
-      {
-        id: "policies-8",
-        question:
-          "Does your community have a local erosion and sediment control ordinance? If yes, does it include the following?",
-        action:
-          "Develop or strengthen a local erosion and sediment control ordinance",
-        pollutants: ["sediment"],
-        benefits: [],
-      },
-      {
-        id: "policies-8a",
-        question: "Minimize clearing",
-        action: "Include minimize clearing requirements",
-        pollutants: ["sediment"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Erosion and sediment control ordinance",
-      },
-      {
-        id: "policies-8b",
-        question: "Protect waterways and stabilize drainageways",
-        action:
-          "Include requirements to protect waterways and stabilize drainageways",
-        pollutants: ["sediment"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Erosion and sediment control ordinance",
-      },
-      {
-        id: "policies-8c",
-        question: "Phase construction",
-        action: "Include phased construction requirements",
-        pollutants: ["sediment"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Erosion and sediment control ordinance",
-      },
-      {
-        id: "policies-8d",
-        question: "Rapid soil stabilization",
-        action: "Include rapid soil stabilization requirements",
-        pollutants: ["sediment"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Erosion and sediment control ordinance",
-      },
-      {
-        id: "policies-8e",
-        question: "Protect steep slopes",
-        action: "Include steep slope protection requirements",
-        pollutants: ["sediment"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Erosion and sediment control ordinance",
-      },
-      {
-        id: "policies-8f",
-        question: "Perimeter controls",
-        action: "Include perimeter control requirements",
-        pollutants: ["sediment"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Erosion and sediment control ordinance",
-      },
-      {
-        id: "policies-8g",
-        question: "Employ advanced settling devices",
-        action: "Include advanced settling device requirements",
-        pollutants: ["sediment"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Erosion and sediment control ordinance",
-      },
-      {
-        id: "policies-8h",
-        question: "Certified contractors implement plan",
-        action: "Require certified contractors to implement erosion and sediment control plans",
-        pollutants: ["sediment"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Erosion and sediment control ordinance",
-      },
-      {
-        id: "policies-8i",
-        question:
-          "Assess erosion and sediment control practices after storms",
-        action:
-          "Include post-storm assessment of erosion and sediment control practices",
-        pollutants: ["sediment"],
-        benefits: [],
-        isSubQuestion: true,
-        parentContext: "Erosion and sediment control ordinance",
+          "Adopt regulations that minimize clearing and prevent erosion and sedimentation during the construction process.",
+        pollutants: ["nutrients", "sediment"],
+        benefits: ["reduces_ghg"],
       },
     ],
   },

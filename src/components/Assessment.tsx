@@ -47,11 +47,6 @@ export default function Assessment({
     return { answered, total };
   };
 
-  const allQuestionsAnswered = priorityOperations.every((op) => {
-    const { answered, total } = getCompletionCount(op.id);
-    return answered === total;
-  });
-
   if (priorityOperations.length === 0) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12 text-center">
@@ -62,8 +57,7 @@ export default function Assessment({
           <p className="text-epa-gray mb-6">
             Based on your screening responses, no operations were identified as
             high priority for pollution prevention assessment. You can go back to
-            adjust your screening answers or proceed to view general
-            recommendations.
+            adjust your screening answers or proceed to view results.
           </p>
           <div className="flex justify-center gap-4">
             <button
@@ -91,10 +85,10 @@ export default function Assessment({
           Assessment Questions
         </h2>
         <p className="text-epa-gray">
-          Answer the following questions about your community's current
-          pollution prevention practices for each prioritized operation. For
-          "No" or "Unknown" answers, recommended actions will be provided in
-          your results.
+          Answer the questions below about your community's current pollution
+          prevention practices. All questions are optional — answer as many as
+          you know. For "No" or "Unknown" answers, recommended actions will be
+          provided in your results.
         </p>
       </div>
 
@@ -103,7 +97,6 @@ export default function Assessment({
         <div className="flex gap-0 min-w-max">
           {priorityOperations.map((op) => {
             const { answered, total } = getCompletionCount(op.id);
-            const isComplete = answered === total;
             return (
               <button
                 key={op.id}
@@ -115,13 +108,7 @@ export default function Assessment({
                 }`}
               >
                 {op.name}
-                <span
-                  className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
-                    isComplete
-                      ? "bg-epa-green text-white"
-                      : "bg-epa-gray-lightest text-epa-gray"
-                  }`}
-                >
+                <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-epa-gray-lightest text-epa-gray">
                   {answered}/{total}
                 </span>
               </button>
@@ -132,33 +119,27 @@ export default function Assessment({
 
       {/* Questions for active tab */}
       {activeOp && (
-        <div className="space-y-4">
-          {activeOp.questions.map((q) => (
-            <div
-              key={q.id}
-              className={`border rounded-lg p-4 transition-colors ${
-                data[q.id]
-                  ? data[q.id] === "Yes"
-                    ? "border-epa-green/30 bg-green-50/30"
-                    : data[q.id] === "No" || data[q.id] === "Unknown"
-                      ? "border-epa-gold/30 bg-amber-50/30"
-                      : "border-epa-gray-lighter bg-gray-50/30"
-                  : "border-epa-gray-lighter"
-              } ${q.isSubQuestion ? "ml-8" : ""}`}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  {q.isSubQuestion && q.parentContext && (
-                    <span className="text-xs text-epa-gray-light font-medium uppercase tracking-wide">
-                      {q.parentContext}
-                    </span>
-                  )}
-                  <p
-                    className={`${q.isSubQuestion ? "text-sm" : "text-base"} text-gray-800 font-medium`}
-                  >
-                    {q.question}
-                  </p>
-                  {q.pollutants.length > 0 && (
+        <div className="space-y-3">
+          {activeOp.questions.map((q) => {
+            const answer = data[q.id];
+            let rowBg = "border-epa-gray-lighter";
+            if (answer === "Yes")
+              rowBg = "border-epa-green/30 bg-green-50/30";
+            else if (answer === "No" || answer === "Unknown")
+              rowBg = "border-epa-gold/30 bg-amber-50/30";
+            else if (answer === "N/A")
+              rowBg = "border-epa-gray-lighter bg-gray-50/30";
+
+            return (
+              <div
+                key={q.id}
+                className={`border rounded-lg p-4 transition-colors ${rowBg}`}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <p className="text-base text-gray-800 font-medium">
+                      {q.question}
+                    </p>
                     <div className="flex flex-wrap gap-1 mt-2">
                       {q.pollutants.map((p) => (
                         <span
@@ -177,27 +158,27 @@ export default function Assessment({
                         </span>
                       ))}
                     </div>
-                  )}
+                  </div>
+                  <select
+                    value={answer ?? ""}
+                    onChange={(e) =>
+                      updateAnswer(
+                        q.id,
+                        (e.target.value as QuestionAnswer) || null
+                      )
+                    }
+                    className="border border-epa-gray-lighter rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-epa-blue focus:border-transparent min-w-[130px] shrink-0"
+                  >
+                    <option value="">Select...</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                    <option value="N/A">N/A</option>
+                    <option value="Unknown">Unknown</option>
+                  </select>
                 </div>
-                <select
-                  value={data[q.id] ?? ""}
-                  onChange={(e) =>
-                    updateAnswer(
-                      q.id,
-                      (e.target.value as QuestionAnswer) || null
-                    )
-                  }
-                  className="border border-epa-gray-lighter rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-epa-blue focus:border-transparent min-w-[130px]"
-                >
-                  <option value="">Select...</option>
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                  <option value="N/A">N/A</option>
-                  <option value="Unknown">Unknown</option>
-                </select>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -213,17 +194,13 @@ export default function Assessment({
               }}
               className="text-sm text-epa-blue hover:text-epa-blue-dark font-medium cursor-pointer"
             >
-              &larr; Previous:{" "}
-              {
-                priorityOperations[priorityOperations.indexOf(activeOp) - 1]
-                  .name
-              }
+              &larr;{" "}
+              {priorityOperations[priorityOperations.indexOf(activeOp) - 1].name}
             </button>
           ) : (
             <div />
           )}
-          {priorityOperations.indexOf(activeOp) <
-          priorityOperations.length - 1 ? (
+          {priorityOperations.indexOf(activeOp) < priorityOperations.length - 1 ? (
             <button
               onClick={() => {
                 const idx = priorityOperations.indexOf(activeOp);
@@ -232,11 +209,7 @@ export default function Assessment({
               }}
               className="text-sm text-epa-blue hover:text-epa-blue-dark font-medium cursor-pointer"
             >
-              Next:{" "}
-              {
-                priorityOperations[priorityOperations.indexOf(activeOp) + 1]
-                  .name
-              }{" "}
+              {priorityOperations[priorityOperations.indexOf(activeOp) + 1].name}{" "}
               &rarr;
             </button>
           ) : (
@@ -254,8 +227,7 @@ export default function Assessment({
         </button>
         <button
           onClick={onNext}
-          disabled={!allQuestionsAnswered}
-          className="bg-epa-blue hover:bg-epa-blue-dark disabled:bg-epa-gray-light text-white font-semibold px-6 py-2 rounded-lg transition-colors cursor-pointer disabled:cursor-not-allowed"
+          className="bg-epa-blue hover:bg-epa-blue-dark text-white font-semibold px-6 py-2 rounded-lg transition-colors cursor-pointer"
         >
           View Results &rarr;
         </button>

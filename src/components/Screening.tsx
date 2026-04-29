@@ -18,6 +18,8 @@ interface ScreeningProps {
   onBack: () => void;
 }
 
+const isNoControl = (v: ScreeningAnswer) => (v as string) === "No";
+
 export default function Screening({
   data,
   onChange,
@@ -25,10 +27,15 @@ export default function Screening({
   onBack,
 }: ScreeningProps) {
   const updateControl = (opId: string, value: ScreeningAnswer) => {
-    onChange({
-      ...data,
-      [opId]: { ...data[opId], control: value },
-    });
+    const entry = data[opId] ?? { control: null, importance: null };
+    if (isNoControl(value)) {
+      onChange({ ...data, [opId]: { control: value, importance: "Low" } });
+    } else if (isNoControl(entry.control)) {
+      // Clear auto-set importance when switching away from No
+      onChange({ ...data, [opId]: { control: value, importance: null } });
+    } else {
+      onChange({ ...data, [opId]: { ...entry, control: value } });
+    }
   };
 
   const updateImportance = (opId: string, value: ImportanceAnswer) => {
@@ -40,7 +47,9 @@ export default function Screening({
 
   const getPriorityStatus = (opId: string) => {
     const entry = data[opId];
-    if (!entry?.control || !entry?.importance) return "incomplete";
+    if (!entry?.control) return "incomplete";
+    if (isNoControl(entry.control)) return "low";
+    if (!entry.importance) return "incomplete";
     if (
       entry.control === "Yes" &&
       (entry.importance === "High" || entry.importance === "Medium")
@@ -50,14 +59,18 @@ export default function Screening({
     return "low";
   };
 
+  // An operation is "answered" if: control=No (auto-completes), or control is set AND importance is set
+  const isAnswered = (opId: string) => {
+    const entry = data[opId];
+    if (!entry?.control) return false;
+    if (isNoControl(entry.control)) return true;
+    return !!entry.importance;
+  };
+
+  const allAnswered = operations.every((op) => isAnswered(op.id));
   const hasAnyPriority = operations.some(
     (op) => getPriorityStatus(op.id) === "priority"
   );
-
-  const allAnswered = operations.every((op) => {
-    const entry = data[op.id];
-    return entry?.control && entry?.importance;
-  });
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -66,23 +79,27 @@ export default function Screening({
           Screen Operations
         </h2>
         <p className="text-epa-gray">
-          Review the operations below to see which ones are relevant to your
-          community. For each operation, indicate whether your government has
-          control over it and rate its importance as a pollution source.
+          Review the operations below to identify which ones are relevant to
+          your community. If your government does not have control over an
+          operation, it will automatically be ranked as low priority. For
+          operations you do control, rate their importance as a pollution source.
         </p>
       </div>
 
       <div className="space-y-4">
         {operations.map((op) => {
           const status = getPriorityStatus(op.id);
+          const controlVal = data[op.id]?.control ?? null;
+          const isAutoLowPriority = isNoControl(controlVal);
+
           return (
             <div
               key={op.id}
               className={`border rounded-lg overflow-hidden transition-colors ${
                 status === "priority"
-                  ? "border-epa-green bg-green-50/50"
+                  ? "border-epa-green bg-green-50/40"
                   : status === "low"
-                    ? "border-epa-gray-lighter bg-gray-50/50"
+                    ? "border-epa-gray-lighter bg-gray-50/40"
                     : "border-epa-gray-lighter"
               }`}
             >
@@ -95,14 +112,17 @@ export default function Screening({
                     <p className="text-sm text-epa-gray mt-1">
                       {op.description}
                     </p>
+                    <p className="text-xs text-epa-gray-light mt-1 italic">
+                      <strong>Associated pollutants:</strong> {op.pollutants}
+                    </p>
                   </div>
                   {status === "priority" && (
-                    <span className="bg-epa-green text-white text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
+                    <span className="bg-epa-green text-white text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap shrink-0">
                       Priority
                     </span>
                   )}
                   {status === "low" && (
-                    <span className="bg-epa-gray-light text-white text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
+                    <span className="bg-epa-gray-light text-white text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap shrink-0">
                       Low Priority
                     </span>
                   )}
@@ -120,10 +140,10 @@ export default function Screening({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-epa-gray mb-1">
-                      Does your government have control over this operation?
+                      1. Does your government have control over this operation?
                     </label>
                     <select
-                      value={data[op.id]?.control ?? ""}
+                      value={controlVal ?? ""}
                       onChange={(e) =>
                         updateControl(
                           op.id,
@@ -139,25 +159,39 @@ export default function Screening({
                       <option value="Unknown">Unknown</option>
                     </select>
                   </div>
+
                   <div>
-                    <label className="block text-sm font-medium text-epa-gray mb-1">
-                      Rate the importance as a pollution source
-                    </label>
-                    <select
-                      value={data[op.id]?.importance ?? ""}
-                      onChange={(e) =>
-                        updateImportance(
-                          op.id,
-                          (e.target.value as ImportanceAnswer) || null
-                        )
-                      }
-                      className="w-full border border-epa-gray-lighter rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-epa-blue focus:border-transparent"
+                    <label
+                      className={`block text-sm font-medium mb-1 ${
+                        isAutoLowPriority
+                          ? "text-epa-gray-light"
+                          : "text-epa-gray"
+                      }`}
                     >
-                      <option value="">Select...</option>
-                      <option value="High">High</option>
-                      <option value="Medium">Medium</option>
-                      <option value="Low">Low</option>
-                    </select>
+                      2. Rate the importance as a pollution source
+                    </label>
+                    {isAutoLowPriority ? (
+                      <div className="w-full border border-epa-gray-lighter rounded-md px-3 py-2 text-sm bg-gray-50 text-epa-gray-light italic">
+                        Auto-ranked as Low Priority (no control)
+                      </div>
+                    ) : (
+                      <select
+                        value={data[op.id]?.importance ?? ""}
+                        onChange={(e) =>
+                          updateImportance(
+                            op.id,
+                            (e.target.value as ImportanceAnswer) || null
+                          )
+                        }
+                        disabled={!controlVal || isNoControl(controlVal)}
+                        className="w-full border border-epa-gray-lighter rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-epa-blue focus:border-transparent disabled:bg-gray-50 disabled:text-epa-gray-light"
+                      >
+                        <option value="">Select...</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                      </select>
+                    )}
                   </div>
                 </div>
               </div>
@@ -168,8 +202,9 @@ export default function Screening({
 
       {allAnswered && !hasAnyPriority && (
         <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
-          No operations were identified as priority. Consider adjusting your
-          responses, or proceed to see general recommendations.
+          No operations were identified as high priority. Consider adjusting your
+          responses if this doesn't reflect your situation, or proceed to view
+          any general recommendations.
         </div>
       )}
 

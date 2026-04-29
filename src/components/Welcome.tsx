@@ -6,14 +6,14 @@ export default function Welcome({ onStart }: WelcomeProps) {
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
       <div className="text-center mb-10">
-        <h2 className="text-3xl md:text-4xl font-bold text-epa-blue-dark mb-4">
-          Welcome to the P2 Opportunity Assessment Tool
+        <h2 className="text-3xl md:text-4xl font-bold text-epa-blue-dark mb-2">
+          Stormwater Pollution Prevention in Government Operations Tool
         </h2>
+        <p className="text-epa-blue font-semibold text-lg mb-4">(SPPIGOT)</p>
         <p className="text-lg text-epa-gray leading-relaxed">
-          Use this tool to see how your municipality, tribe, or territory's
+          Use the SPPIGOT to see how your municipality, tribe, or territory's
           stormwater operations address pollution prevention (P2) and identify
-          operations with the most potential for integrating P2 in your
-          community.
+          actions for integrating P2 in your community.
         </p>
       </div>
 
@@ -62,12 +62,12 @@ export default function Welcome({ onStart }: WelcomeProps) {
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
-            "Parks & Open Space Management",
+            "Parks and Landscaping",
             "Winter Road Maintenance",
             "Construction & Maintenance",
             "Vehicle & Fleet Management",
-            "Outdoor Facility Management",
-            "Policies & Regulations",
+            "Public Facility Management",
+            "Procurement & Regulations",
           ].map((op) => (
             <div key={op} className="flex items-center gap-2 text-epa-gray">
               <span className="text-epa-green font-bold">&bull;</span>

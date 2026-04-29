@@ -10,10 +10,10 @@ export default function Header({ currentStep, totalSteps }: HeaderProps) {
     <header className="bg-epa-blue text-white">
       <div className="max-w-5xl mx-auto px-4 py-4">
         <h1 className="text-xl md:text-2xl font-bold m-0">
-          P2 Opportunity Assessment Tool
+          Stormwater Pollution Prevention in Government Operations Tool
         </h1>
-        <p className="text-sm text-blue-100 mt-1">
-          Stormwater Pollution Prevention in Government Operations (SPPIGOT)
+        <p className="text-sm text-blue-100 mt-1 font-semibold tracking-wide">
+          SPPIGOT
         </p>
       </div>
       {currentStep > 0 && (
